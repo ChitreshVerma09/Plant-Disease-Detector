@@ -1,3 +1,5 @@
+import os
+import gdown
 import streamlit as st
 import tensorflow as tf
 import numpy as np
@@ -29,6 +31,7 @@ st.markdown("""
     .header-subtitle {
         color: #94a3b8;
         font-size: 1.1rem;
+        font-weight: 500;
         text-align: center;
         margin-bottom: 30px;
     }
@@ -73,14 +76,27 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Load Model & Class Names
+# Load Model & Class Names (With Automated Google Drive Download)
 @st.cache_resource
 def load_resources():
-    model = tf.keras.models.load_model('model.h5')
+    model_path = 'model.h5'
+    
+    # Agar model.h5 server par nahi hai, toh Drive se download hoga
+    if not os.path.exists(model_path):
+        file_id = '19Ea_1N0P6j3iO9lO6xQ9E_8SgVq1WjX_'  # Aapki Drive File ID
+        url = f'https://drive.google.com/uc?id={file_id}'
+        with st.spinner("Downloading AI Model from Cloud... Please wait"):
+            gdown.download(url, model_path, quiet=False)
+            
+    model = tf.keras.models.load_model(model_path)
     class_names = np.load('class_names.npy')
     return model, class_names
 
-model, CLASS_NAMES = load_resources()
+# Check if file_id is set or fallback
+try:
+    model, CLASS_NAMES = load_resources()
+except Exception as e:
+    st.error(f"Error loading model: {e}")
 
 # Treatments / Upay Dictionary
 TREATMENTS = {
