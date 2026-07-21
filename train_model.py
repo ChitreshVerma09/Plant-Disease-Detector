@@ -44,6 +44,6 @@ model.compile(
 # Retrain model with saved classes
 model.fit(train_ds, epochs=EPOCHS)
 
-# Save as lightweight native Keras format
+# Save as H5 format
 model.save("model.h5")
-print("Model and Class Names Saved Successfully as model_light.keras!")
+print("Model and Class Names Saved Successfully as model.h5!")
