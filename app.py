@@ -3,7 +3,7 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-from huggingface_hub import hf_hub_download
+import urllib.request
 
 # Page Config
 st.set_page_config(
@@ -25,18 +25,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Auto Download .h5 Model safely
+# Auto Download .h5 Model from Drive Direct Link
 @st.cache_resource
 def load_resources():
     model_path = 'model.h5'
     
     if not os.path.exists(model_path):
+        # Direct link for your Drive File ID: 1m4PgD2XGSesFu8Z0s_bChDAdpi5AVZeQ
+        url = "https://drive.usercontent.google.com/download?id=1m4PgD2XGSesFu8Z0s_bChDAdpi5AVZeQ&confirm=t"
         with st.spinner("Downloading AI Model (.h5) from Cloud... Please wait"):
-            # Direct public download link for model.h5
-            model_path = hf_hub_download(
-                repo_id="chitreshverma/plant-disease-model", 
-                filename="model.h5"
-            )
+            urllib.request.urlretrieve(url, model_path)
             
     model = tf.keras.models.load_model(model_path, compile=False)
     class_names = np.load('class_names.npy')
