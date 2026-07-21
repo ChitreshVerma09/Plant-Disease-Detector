@@ -76,7 +76,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Load Model & Class Names Safely
+# Load Model & Class Names
 @st.cache_resource
 def load_resources():
     model_path = 'model_light.keras'
@@ -87,7 +87,7 @@ def load_resources():
         with st.spinner("Downloading AI Model from Cloud... Please wait"):
             gdown.download(url, model_path, quiet=False)
             
-    # Native Keras 3 safe load with compile=False to bypass InputLayer deserialization bugs
+    # Native Keras 3 load
     model = tf.keras.models.load_model(model_path, compile=False)
     class_names = np.load('class_names.npy')
     return model, class_names
