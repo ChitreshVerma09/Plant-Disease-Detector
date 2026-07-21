@@ -2,7 +2,6 @@ import os
 import gdown
 import streamlit as st
 import tensorflow as tf
-import tf_keras as keras
 import numpy as np
 from PIL import Image
 
@@ -77,20 +76,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Load Model & Class Names (Using tf_keras for legacy Keras 3 compatibility)
+# Load Model & Class Names Safely
 @st.cache_resource
 def load_resources():
     model_path = 'model_light.keras'
     
-    # Agar model_light.keras server par nahi hai, toh Drive se download hoga
     if not os.path.exists(model_path):
         file_id = '1W6IECSW0Njjpvzxex0HC7hkeA4eFE2j3'
         url = f'https://drive.google.com/uc?id={file_id}'
         with st.spinner("Downloading AI Model from Cloud... Please wait"):
             gdown.download(url, model_path, quiet=False)
             
-    # FIXED: Using tf_keras instead of tf.keras
-    model = keras.models.load_model(model_path)
+    # Native Keras 3 safe load with compile=False to bypass InputLayer deserialization bugs
+    model = tf.keras.models.load_model(model_path, compile=False)
     class_names = np.load('class_names.npy')
     return model, class_names
 
