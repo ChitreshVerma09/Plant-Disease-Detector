@@ -1,11 +1,7 @@
 import os
-# Force Keras 3 mode before importing TensorFlow
-os.environ["TF_USE_LEGACY_KERAS"] = "0"
-
 import gdown
 import streamlit as st
 import tensorflow as tf
-import keras
 import numpy as np
 from PIL import Image
 
@@ -80,7 +76,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Load Model & Class Names (Using Pure Keras 3 Loader)
+# Load Model & Class Names Safely
 @st.cache_resource
 def load_resources():
     model_path = 'model_light.keras'
@@ -91,8 +87,8 @@ def load_resources():
         with st.spinner("Downloading AI Model from Cloud... Please wait"):
             gdown.download(url, model_path, quiet=False)
             
-    # Pure Keras 3 deserialization with compile=False
-    model = keras.models.load_model(model_path, compile=False)
+    # Compile=False prevents optimizer deserialization errors
+    model = tf.keras.models.load_model(model_path, compile=False)
     class_names = np.load('class_names.npy')
     return model, class_names
 
