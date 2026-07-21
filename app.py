@@ -5,20 +5,6 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 
-# -------------------------------------------------------------
-# SAFE DESERIALIZATION FIX FOR KERAS 3 / GLOROT UNIFORM BUG
-# -------------------------------------------------------------
-from keras.initializers import GlorotUniform
-
-class SafeGlorotUniform(GlorotUniform):
-    def __init__(self, **kwargs):
-        # Discard unexpected keyword arguments like 'input_axes', 'output_axes'
-        kwargs.pop('input_axes', None)
-        kwargs.pop('output_axes', None)
-        super().__init__(**kwargs)
-
-# -------------------------------------------------------------
-
 # Page Config (Title & Favicon)
 st.set_page_config(
     page_title="Plant Doctor | Disease Detector",
@@ -90,23 +76,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Load Model & Class Names Safely
+# Load Model (.h5 Format) & Class Names
 @st.cache_resource
 def load_resources():
-    model_path = 'model_light.keras'
+    model_path = 'model.h5'
     
     if not os.path.exists(model_path):
-        file_id = '1W6IECSW0Njjpvzxex0HC7hkeA4eFE2j3'
+        file_id = '1m4PgD2XGSesFu8Z0s_bChDAdpi5AVZeQ'
         url = f'https://drive.google.com/uc?id={file_id}'
-        with st.spinner("Downloading AI Model from Cloud... Please wait"):
+        with st.spinner("Downloading AI Model (.h5) from Cloud... Please wait"):
             gdown.download(url, model_path, quiet=False)
             
-    # Load model with custom_objects patch
-    model = tf.keras.models.load_model(
-        model_path, 
-        custom_objects={'GlorotUniform': SafeGlorotUniform},
-        compile=False
-    )
+    # Load H5 model safely
+    model = tf.keras.models.load_model(model_path, compile=False)
     class_names = np.load('class_names.npy')
     return model, class_names
 
