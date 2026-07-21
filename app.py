@@ -76,14 +76,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Load Model & Class Names (With Automated Google Drive Download)
+# Load Model & Class Names (Updated for model_light.keras)
 @st.cache_resource
 def load_resources():
-    model_path = 'model.h5'
+    model_path = 'model_light.keras'
     
-    # Agar model.h5 server par nahi hai, toh Drive se download hoga
+    # Agar model_light.keras server par nahi hai, toh Drive se download hoga
     if not os.path.exists(model_path):
-        file_id = '19Ea_1N0P6j3iO9lO6xQ9E_8SgVq1WjX_'  # Aapki Drive File ID
+        # ⚠️ Yahan model_light.keras ki Google Drive File ID daalna
+        file_id = 'YOUR_NEW_FILE_ID_HERE' 
         url = f'https://drive.google.com/uc?id={file_id}'
         with st.spinner("Downloading AI Model from Cloud... Please wait"):
             gdown.download(url, model_path, quiet=False)
@@ -92,7 +93,7 @@ def load_resources():
     class_names = np.load('class_names.npy')
     return model, class_names
 
-# Check if file_id is set or fallback
+# Load resources with error handling
 try:
     model, CLASS_NAMES = load_resources()
 except Exception as e:
