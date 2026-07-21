@@ -3,7 +3,6 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-import urllib.request
 
 # Page Config
 st.set_page_config(
@@ -25,16 +24,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Auto Download .h5 Model from Drive Direct Link
+# Direct Local Model Load (.h5)
 @st.cache_resource
 def load_resources():
     model_path = 'model.h5'
     
     if not os.path.exists(model_path):
-        # Direct link for your Drive File ID: 1m4PgD2XGSesFu8Z0s_bChDAdpi5AVZeQ
-        url = "https://drive.usercontent.google.com/download?id=1m4PgD2XGSesFu8Z0s_bChDAdpi5AVZeQ&confirm=t"
-        with st.spinner("Downloading AI Model (.h5) from Cloud... Please wait"):
-            urllib.request.urlretrieve(url, model_path)
+        st.error("`model.h5` file aapke project folder me nahi mili! Kripya check karein.")
+        return None, None
             
     model = tf.keras.models.load_model(model_path, compile=False)
     class_names = np.load('class_names.npy')
