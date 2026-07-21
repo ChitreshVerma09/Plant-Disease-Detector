@@ -21,7 +21,7 @@ print("Exact Dataset Classes:", class_names)
 # Save exact class names list so app.py uses the SAME order
 np.save('class_names.npy', class_names)
 
-# Build CNN
+# Build CNN Model
 model = models.Sequential([
     layers.Rescaling(1./255, input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3)),
     layers.Conv2D(32, (3, 3), activation='relu'),
@@ -41,7 +41,7 @@ model.compile(
     metrics=['accuracy']
 )
 
-# Retrain model with saved classes
+# Train model
 model.fit(train_ds, epochs=EPOCHS)
 
 # Save as H5 format
