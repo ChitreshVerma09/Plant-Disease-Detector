@@ -5,6 +5,20 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 
+# -------------------------------------------------------------
+# SAFE DESERIALIZATION FIX FOR KERAS 3 / GLOROT UNIFORM BUG
+# -------------------------------------------------------------
+from keras.initializers import GlorotUniform
+
+class SafeGlorotUniform(GlorotUniform):
+    def __init__(self, **kwargs):
+        # Discard unexpected keyword arguments like 'input_axes', 'output_axes'
+        kwargs.pop('input_axes', None)
+        kwargs.pop('output_axes', None)
+        super().__init__(**kwargs)
+
+# -------------------------------------------------------------
+
 # Page Config (Title & Favicon)
 st.set_page_config(
     page_title="Plant Doctor | Disease Detector",
@@ -87,8 +101,12 @@ def load_resources():
         with st.spinner("Downloading AI Model from Cloud... Please wait"):
             gdown.download(url, model_path, quiet=False)
             
-    # Compile=False prevents optimizer deserialization errors
-    model = tf.keras.models.load_model(model_path, compile=False)
+    # Load model with custom_objects patch
+    model = tf.keras.models.load_model(
+        model_path, 
+        custom_objects={'GlorotUniform': SafeGlorotUniform},
+        compile=False
+    )
     class_names = np.load('class_names.npy')
     return model, class_names
 
