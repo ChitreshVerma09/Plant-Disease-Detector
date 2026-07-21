@@ -77,7 +77,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Load Model & Class Names (Updated with Exact File ID)
+# Load Model & Class Names (Using tf_keras for legacy Keras 3 compatibility)
 @st.cache_resource
 def load_resources():
     model_path = 'model_light.keras'
@@ -89,7 +89,8 @@ def load_resources():
         with st.spinner("Downloading AI Model from Cloud... Please wait"):
             gdown.download(url, model_path, quiet=False)
             
-    model = tf.keras.models.load_model(model_path)
+    # FIXED: Using tf_keras instead of tf.keras
+    model = keras.models.load_model(model_path)
     class_names = np.load('class_names.npy')
     return model, class_names
 
